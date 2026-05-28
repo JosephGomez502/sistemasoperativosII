@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: airport
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/your-org/airport-backend:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_URL
+              valueFrom: { configMapKeyRef: { name: airport-config, key: DB_URL } }
+            - name: DB_USERNAME
+              valueFrom: { secretKeyRef: { name: airport-secrets, key: DB_USERNAME } }
+            - name: DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: airport-secrets, key: DB_PASSWORD } }
+            - name: JWT_SECRET
+              valueFrom: { secretKeyRef: { name: airport-secrets, key: JWT_SECRET } }
+            - name: CORS_ALLOWED_ORIGINS
+              valueFrom: { configMapKeyRef: { name: airport-config, key: CORS_ALLOWED_ORIGINS } }
+            - name: PAYMENT_APPROVAL_RATE
+              valueFrom: { configMapKeyRef: { name: airport-config, key: PAYMENT_APPROVAL_RATE } }
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 45
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 20
+          resources:
+            requests: { cpu: "250m", memory: "512Mi" }
+            limits: { cpu: "1000m", memory: "1Gi" }

@@ -1,0 +1,50 @@
+services:
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    container_name: airport-oracle
+    environment:
+      ORACLE_PASSWORD: OracleRoot123
+      APP_USER: AIRPORT_APP
+      APP_USER_PASSWORD: Airport12345
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+
+  backend:
+    build: ./backend
+    container_name: airport-backend
+    depends_on:
+      oracle:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:oracle:thin:@oracle:1521/FREEPDB1
+      DB_USERNAME: AIRPORT_APP
+      DB_PASSWORD: Airport12345
+      JWT_SECRET: change-this-super-long-secret-change-this-super-long-secret
+      CORS_ALLOWED_ORIGINS: http://localhost:8081,http://localhost:4200
+      PAYMENT_APPROVAL_RATE: "0.92"
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health/readiness"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build: ./frontend
+    container_name: airport-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+
+volumes:
+  oracle-data:
