@@ -87,6 +87,45 @@ kubectl -n monitoring get pods -o wide
 kubectl -n monitoring get svc
 ```
 
+## HTTPS con Let's Encrypt
+
+Let's Encrypt requiere un dominio real apuntando al Ingress. No emite un certificado publico normal para una URL con IP y NodePort como `http://144.91.92.71:32383`.
+
+Pasos:
+
+1. Crear un registro DNS tipo `A`.
+
+```text
+airport.tudominio.com -> 144.91.92.71
+```
+
+2. Verificar que NGINX Ingress atienda HTTP/HTTPS en la IP publica.
+
+```bash
+kubectl get svc -A | grep ingress
+kubectl get ingress -A
+```
+
+3. Activar cert-manager y Let's Encrypt:
+
+```bash
+DOMAIN=airport.tudominio.com EMAIL=admin@tudominio.com ./ops/enable-letsencrypt.sh
+```
+
+4. Validar certificado:
+
+```bash
+kubectl -n airport get certificate
+kubectl -n airport describe certificate airport-tls
+kubectl -n airport get secret airport-tls
+```
+
+Acceso final:
+
+```text
+https://airport.tudominio.com
+```
+
 Acceso:
 
 ```text
@@ -241,6 +280,7 @@ docker images
 - [ ] PV y PVC de Oracle.
 - [ ] ConfigMap y Secret.
 - [ ] Ingress funcional.
+- [ ] HTTPS con certificado Let's Encrypt.
 - [ ] Prometheus funcional.
 - [ ] Grafana funcional.
 - [ ] VirtualMin funcional.

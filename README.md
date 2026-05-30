@@ -179,6 +179,12 @@ Accesos recomendados para evidencias:
 - Grafana: `http://144.91.92.71:30300` (`admin` / `AdminGrafana123`)
 - VirtualMin: `https://144.91.92.71:10000`
 
+HTTPS con Let's Encrypt requiere un dominio real apuntando a la IP publica del Ingress:
+
+```bash
+DOMAIN=airport.tudominio.com EMAIL=admin@tudominio.com ./ops/enable-letsencrypt.sh
+```
+
 Documentacion del proyecto final:
 
 - `docs/PROYECTO-SOII-RUNBOOK.md`
