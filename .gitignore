@@ -1,0 +1,10 @@
+*.tar
+airport-backend.tar
+airport-frontend.tar
+airport-backend-*.tar
+airport-frontend-*.tar
+backend/airport-backend.tar
+node_modules/
+dist/
+target/
+.env

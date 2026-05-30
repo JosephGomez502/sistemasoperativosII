@@ -161,6 +161,29 @@ kubectl -n airport get pods
 kubectl -n airport get ingress
 ```
 
+## Operacion VPS para Sistemas Operativos II
+
+El proyecto incluye una capa operativa para el despliegue final del curso:
+
+```bash
+chmod +x ops/*.sh
+DANA_IP=173.212.198.19 APP_DIR=/root/sistemasoperativosII ./ops/deploy-vps.sh
+APP_URL=http://144.91.92.71:32383 ./ops/validate-production.sh
+kubectl apply -f k8s/monitoring/
+```
+
+Accesos recomendados para evidencias:
+
+- Aplicacion: `http://144.91.92.71:32383`
+- Prometheus: `http://144.91.92.71:30090`
+- Grafana: `http://144.91.92.71:30300` (`admin` / `AdminGrafana123`)
+- VirtualMin: `https://144.91.92.71:10000`
+
+Documentacion del proyecto final:
+
+- `docs/PROYECTO-SOII-RUNBOOK.md`
+- `docs/INFORME-SOII-PLANTILLA.md`
+
 ## Despliegue en 2 VPS Linux
 
 Recomendacion:

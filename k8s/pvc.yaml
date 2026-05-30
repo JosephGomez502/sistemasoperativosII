@@ -4,6 +4,8 @@ metadata:
   name: oracle-data
   namespace: airport
 spec:
+  storageClassName: manual
+  volumeName: oracle-pv
   accessModes:
     - ReadWriteOnce
   resources:

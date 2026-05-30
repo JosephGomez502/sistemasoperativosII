@@ -28,7 +28,10 @@ spring:
       mail.smtp.auth: ${MAIL_SMTP_AUTH:false}
       mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS:false}
 management:
-  endpoints.web.exposure.include: health,info,metrics
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
   endpoint.health.probes.enabled: true
 app:
   security:

@@ -24,7 +24,7 @@ public class SecurityConfig {
     return http.csrf(csrf -> csrf.disable()).cors(c -> c.configurationSource(cors))
         .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/actuator/health/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+            .requestMatchers("/actuator/health/**", "/actuator/prometheus", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
             .requestMatchers("/api/admin/**").hasRole("ADMIN")
