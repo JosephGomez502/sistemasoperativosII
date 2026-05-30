@@ -17,6 +17,9 @@ public class ProfileService {
   @Transactional public ProfileResponse update(String email, ProfileRequest r) {
     var u = users.findByEmailIgnoreCase(email).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
     u.setFullName(r.fullName()); u.setPhone(r.phone()); u.setDocumentId(r.documentId());
+    u.setTitle(r.title()); u.setGender(r.gender()); u.setBirthDate(r.birthDate()); u.setNationality(r.nationality());
+    u.setDocumentType(r.documentType()); u.setDocumentExpiration(r.documentExpiration()); u.setDocumentCountry(r.documentCountry());
+    u.setFrequentFlyer(r.frequentFlyer());
     return mapper.toProfile(u);
   }
 }

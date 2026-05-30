@@ -11,6 +11,9 @@ public class AdminController {
   private final AdminService admin;
   public AdminController(AdminService admin) { this.admin = admin; }
   @GetMapping("/dashboard") DashboardResponse dashboard() { return admin.dashboard(); }
+  @GetMapping("/crm/customers") List<CustomerResponse> customers() { return admin.customers(); }
+  @GetMapping("/crm/reservations") List<ReservationResponse> reservations() { return admin.reservations(); }
+  @GetMapping("/crm/payments") List<PaymentResponse> payments() { return admin.payments(); }
   @GetMapping("/airports") List<AirportResponse> airports() { return admin.airports(); }
   @PostMapping("/airports") AirportResponse createAirport(@Valid @RequestBody AirportRequest r) { return admin.saveAirport(r); }
   @PutMapping("/airports/{id}") AirportResponse updateAirport(@PathVariable Long id, @Valid @RequestBody AirportRequest r) { return admin.updateAirport(id, r); }

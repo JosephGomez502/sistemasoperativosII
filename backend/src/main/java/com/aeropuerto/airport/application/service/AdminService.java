@@ -64,7 +64,22 @@ public class AdminService {
   public DashboardResponse dashboard() {
     return new DashboardResponse(payments.sumByStatus(PaymentStatus.APPROVED),
         flights.search(null, null, java.time.OffsetDateTime.now().minusDays(1), FlightStatus.SCHEDULED).size(),
-        users.count(), reservations.countByStatus(ReservationStatus.CONFIRMED));
+        users.count(), reservations.countByStatus(ReservationStatus.CONFIRMED), airports.count(), aircraft.count());
+  }
+  public List<CustomerResponse> customers() {
+    return users.findAll().stream()
+        .map(u -> new CustomerResponse(u.getId(), u.getFullName(), u.getEmail(), u.getPhone(), u.getDocumentId(),
+            u.getRole().name(), u.getCreatedAt().toString(), reservations.countByUserId(u.getId())))
+        .toList();
+  }
+  public List<ReservationResponse> reservations() {
+    return reservations.findAllByOrderByCreatedAtDesc().stream().map(mapper::toReservation).toList();
+  }
+  public List<PaymentResponse> payments() {
+    return payments.findAllByOrderByCreatedAtDesc().stream()
+        .map(p -> new PaymentResponse(p.getId(), p.getReservation().getCode(), p.getAmount(), p.getStatus().name(),
+            p.getAuthorizationCode(), p.getCardLast4(), p.getCreatedAt().toString()))
+        .toList();
   }
   private void createSeats(Flight f, int capacity) {
     for (int i = 1; i <= capacity; i++) {

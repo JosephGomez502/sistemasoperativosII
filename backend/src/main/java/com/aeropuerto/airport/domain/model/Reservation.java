@@ -15,6 +15,10 @@ public class Reservation {
   @ManyToOne(optional = false, fetch = FetchType.LAZY) @JoinColumn(name = "FLIGHT_ID") private Flight flight;
   @OneToOne(optional = false, fetch = FetchType.LAZY) @JoinColumn(name = "SEAT_ID") private Seat seat;
   @Enumerated(EnumType.STRING) @Column(name = "STATUS", nullable = false, length = 30) private ReservationStatus status;
+  @Column(name = "EMAIL_SENT", nullable = false) private Boolean emailSent;
   @Column(name = "CREATED_AT", nullable = false) private Instant createdAt;
-  @PrePersist void prePersist() { if (createdAt == null) createdAt = Instant.now(); }
+  @PrePersist void prePersist() {
+    if (createdAt == null) createdAt = Instant.now();
+    if (emailSent == null) emailSent = false;
+  }
 }

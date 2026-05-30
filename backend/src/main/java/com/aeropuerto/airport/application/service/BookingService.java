@@ -3,6 +3,7 @@ package com.aeropuerto.airport.application.service;
 import com.aeropuerto.airport.application.dto.ApiDtos.*;
 import com.aeropuerto.airport.domain.model.*;
 import com.aeropuerto.airport.domain.repository.*;
+import com.aeropuerto.airport.infrastructure.mail.TicketEmailService;
 import com.aeropuerto.airport.infrastructure.pdf.TicketPdfService;
 import com.aeropuerto.airport.presentation.error.ApiException;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,15 +18,18 @@ import java.util.UUID;
 public class BookingService {
   private final UserRepository users; private final FlightRepository flights; private final SeatRepository seats;
   private final ReservationRepository reservations; private final PaymentRepository payments; private final EntityMapper mapper;
-  private final TicketPdfService pdf; private final double approvalRate; private final SecureRandom random = new SecureRandom();
+  private final TicketPdfService pdf; private final TicketEmailService emailService;
+  private final double approvalRate; private final SecureRandom random = new SecureRandom();
   public BookingService(UserRepository users, FlightRepository flights, SeatRepository seats, ReservationRepository reservations,
-      PaymentRepository payments, EntityMapper mapper, TicketPdfService pdf, @Value("${app.payment.approval-rate}") double approvalRate) {
+      PaymentRepository payments, EntityMapper mapper, TicketPdfService pdf, TicketEmailService emailService,
+      @Value("${app.payment.approval-rate}") double approvalRate) {
     this.users = users; this.flights = flights; this.seats = seats; this.reservations = reservations; this.payments = payments;
-    this.mapper = mapper; this.pdf = pdf; this.approvalRate = approvalRate;
+    this.mapper = mapper; this.pdf = pdf; this.emailService = emailService; this.approvalRate = approvalRate;
   }
   @Transactional
   public ReservationResponse checkout(String email, CheckoutRequest r) {
     User user = users.findByEmailIgnoreCase(email).orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Usuario invalido"));
+    updatePassenger(user, r);
     Flight flight = flights.findById(r.flightId()).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Vuelo no encontrado"));
     Seat seat = seats.findByFlightIdAndSeatNumber(r.flightId(), r.seatNumber()).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Asiento no encontrado"));
     if (Boolean.TRUE.equals(seat.getReserved()) || flight.getAvailableSeats() <= 0) throw new ApiException(HttpStatus.CONFLICT, "Asiento no disponible");
@@ -41,6 +45,8 @@ public class BookingService {
     seat.setReserved(true);
     flight.setAvailableSeats(flight.getAvailableSeats() - 1);
     reservation.setStatus(ReservationStatus.CONFIRMED);
+    byte[] ticket = pdf.render(reservation);
+    reservation.setEmailSent(emailService.sendTicket(reservation, ticket));
     return mapper.toReservation(reservation);
   }
   @Transactional(readOnly = true)
@@ -54,6 +60,25 @@ public class BookingService {
     if (r.getStatus() != ReservationStatus.CONFIRMED) throw new ApiException(HttpStatus.CONFLICT, "Reserva no confirmada");
     return pdf.render(r);
   }
+  @Transactional
+  public ReservationResponse resendTicket(String email, String code) {
+    Reservation r = reservations.findByCode(code).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Reserva no encontrada"));
+    if (!r.getUser().getEmail().equalsIgnoreCase(email)) throw new ApiException(HttpStatus.FORBIDDEN, "Sin permisos");
+    if (r.getStatus() != ReservationStatus.CONFIRMED) throw new ApiException(HttpStatus.CONFLICT, "Reserva no confirmada");
+    r.setEmailSent(emailService.sendTicket(r, pdf.render(r)));
+    return mapper.toReservation(r);
+  }
   private String code() { return "AP-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase(); }
   private String last4(String card) { String digits = card.replaceAll("\\D", ""); return digits.substring(Math.max(0, digits.length() - 4)); }
+  private void updatePassenger(User user, CheckoutRequest r) {
+    user.setTitle(r.title());
+    user.setGender(r.gender());
+    user.setBirthDate(r.birthDate());
+    user.setNationality(r.nationality());
+    user.setDocumentType(r.documentType());
+    user.setDocumentId(r.documentId());
+    user.setDocumentExpiration(r.documentExpiration());
+    user.setDocumentCountry(r.documentCountry());
+    user.setFrequentFlyer(r.frequentFlyer());
+  }
 }

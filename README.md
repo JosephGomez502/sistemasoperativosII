@@ -14,11 +14,12 @@ k8s/       Manifiestos Kubernetes para 2 VPS con NGINX Ingress
 
 - Portal publico y busqueda de vuelos.
 - Registro, login, JWT, refresh token y roles `ADMIN` / `CLIENT`.
-- Checkout con simulador de pagos configurable.
+- Checkout con simulador de pagos configurable y formulario de pasajero estilo aerolinea.
 - Reservas con bloqueo pesimista de asiento.
-- Ticket PDF termico con QR.
+- Ticket PDF compacto tipo boarding pass, pensado para impresion termica.
+- Envio automatico del detalle y PDF por correo via SMTP configurable.
 - Panel cliente con historial y descarga PDF.
-- Panel admin con dashboard, aeropuertos, aviones y vuelos.
+- Panel admin con dashboard, CRM de clientes, reservas, pagos, aeropuertos, aviones y vuelos.
 - Migraciones Flyway para Oracle con secuencias, constraints, indices y triggers.
 - Docker Compose local y manifiestos Kubernetes listos para adaptar imagen/dominio.
 
@@ -33,6 +34,7 @@ Servicios:
 - Frontend: http://localhost:8081
 - Backend: http://localhost:8080
 - Swagger: http://localhost:8080/swagger-ui.html
+- MailHog Inbox local: http://localhost:8025
 - Oracle: `localhost:1521/FREEPDB1`
 
 Credenciales iniciales:
@@ -42,6 +44,22 @@ Admin: admin@airport.local / Admin12345
 ```
 
 > En produccion cambia `JWT_SECRET`, passwords y `CORS_ALLOWED_ORIGINS`. El admin semilla usa `{noop}` solo para facilitar el primer acceso local; los usuarios registrados se almacenan con BCrypt mediante Spring Security.
+
+## Correo sin suscripcion
+
+Localmente el proyecto levanta `mailhog`, un servidor SMTP de desarrollo que no pide login ni suscripcion. El backend envia el detalle de compra y adjunta el PDF al SMTP en `mailhog:1025`, y puedes ver los correos en http://localhost:8025.
+
+En VPS puedes mantener MailHog solo para pruebas o apuntar estas variables a un SMTP propio, por ejemplo Postfix instalado en el servidor:
+
+```text
+MAIL_HOST=localhost
+MAIL_PORT=25
+MAIL_FROM=reservas@tudominio.com
+MAIL_SMTP_AUTH=false
+MAIL_SMTP_STARTTLS=false
+```
+
+No se integra ninguna API externa de pago ni de email. Para entrega real a Gmail/Outlook/Yahoo conviene configurar DNS del dominio (`SPF`, `DKIM`, `DMARC`) en el VPS.
 
 ## Ejecucion backend local
 
@@ -102,7 +120,7 @@ curl "http://localhost:8080/api/public/flights?origin=GUA&destination=SAL"
 curl -X POST http://localhost:8080/api/client/checkout \
   -H "Authorization: Bearer ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"flightId":1,"seatNumber":"A1","cardNumber":"4111111111111111","cardHolder":"Cliente Demo","expiry":"12/30","cvv":"123"}'
+  -d '{"flightId":1,"seatNumber":"A1","cardNumber":"4111111111111111","cardHolder":"Cliente Demo","expiry":"12/30","cvv":"123","title":"Sr.","gender":"MASCULINO","birthDate":"1995-05-30","nationality":"Guatemala","documentType":"DPI","documentId":"1234567890101","documentExpiration":"2030-12-31","documentCountry":"Guatemala","frequentFlyer":""}'
 ```
 
 ### Descargar ticket
@@ -166,6 +184,11 @@ Ver `.env.example`.
 | `JWT_SECRET` | Secreto HMAC de al menos 64 caracteres |
 | `CORS_ALLOWED_ORIGINS` | Origenes frontend permitidos |
 | `PAYMENT_APPROVAL_RATE` | Probabilidad de aprobacion del simulador |
+| `MAIL_HOST` | Host SMTP local o externo |
+| `MAIL_PORT` | Puerto SMTP |
+| `MAIL_FROM` | Remitente de los tickets |
+| `MAIL_SMTP_AUTH` | Activa autenticacion SMTP |
+| `MAIL_SMTP_STARTTLS` | Activa STARTTLS SMTP |
 
 ## Notas de produccion
 

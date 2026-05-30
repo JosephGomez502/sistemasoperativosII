@@ -10,8 +10,8 @@ import { AuthService } from './core/services/auth.service';
   standalone: true,
   imports: [RouterOutlet, RouterLink, MatToolbarModule, MatButtonModule, MatIconModule],
   template: `
-    <mat-toolbar color="primary">
-      <a routerLink="/" class="brand"><mat-icon>flight_takeoff</mat-icon><span>AeroPort</span></a>
+    <mat-toolbar class="tag-bar">
+      <a routerLink="/" class="brand"><span>TagAirlines</span><mat-icon>flight_takeoff</mat-icon></a>
       <span class="toolbar-spacer"></span>
       <a mat-button routerLink="/flights">Vuelos</a>
       @if (isAdmin()) { <a mat-button routerLink="/admin">Admin</a> }
@@ -20,7 +20,7 @@ import { AuthService } from './core/services/auth.service';
     </mat-toolbar>
     <router-outlet />
   `,
-  styles: [`.brand{display:flex;gap:8px;align-items:center;font-weight:800}.brand span{letter-spacing:0}`]
+  styles: [`.brand{display:flex;gap:8px;align-items:center;font-weight:800;font-size:28px}.brand span{letter-spacing:0} mat-toolbar{height:72px}`]
 })
 export class AppComponent {
   private auth = inject(AuthService);

@@ -22,6 +22,22 @@ public class User {
   private String phone;
   @Column(name = "DOCUMENT_ID", length = 60)
   private String documentId;
+  @Column(name = "TITLE", length = 20)
+  private String title;
+  @Column(name = "GENDER", length = 20)
+  private String gender;
+  @Column(name = "BIRTH_DATE", length = 20)
+  private String birthDate;
+  @Column(name = "NATIONALITY", length = 80)
+  private String nationality;
+  @Column(name = "DOCUMENT_TYPE", length = 40)
+  private String documentType;
+  @Column(name = "DOCUMENT_EXPIRATION", length = 20)
+  private String documentExpiration;
+  @Column(name = "DOCUMENT_COUNTRY", length = 80)
+  private String documentCountry;
+  @Column(name = "FREQUENT_FLYER", length = 60)
+  private String frequentFlyer;
   @Column(name = "CREATED_AT", nullable = false)
   private Instant createdAt;
   @PrePersist void prePersist() { if (createdAt == null) createdAt = Instant.now(); }

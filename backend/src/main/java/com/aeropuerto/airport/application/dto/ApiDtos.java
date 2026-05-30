@@ -26,10 +26,23 @@ public final class ApiDtos {
                                Integer availableSeats, FlightStatus status) {}
   public record SeatResponse(Long id, String seatNumber, Boolean reserved) {}
   public record CheckoutRequest(@NotNull Long flightId, @NotBlank String seatNumber, @NotBlank String cardNumber,
-                                @NotBlank String cardHolder, @NotBlank String expiry, @NotBlank String cvv) {}
+                                @NotBlank String cardHolder, @NotBlank String expiry, @NotBlank String cvv,
+                                @NotBlank String title, @NotBlank String gender, @NotBlank String birthDate,
+                                @NotBlank String nationality, @NotBlank String documentType,
+                                @NotBlank String documentId, @NotBlank String documentExpiration,
+                                @NotBlank String documentCountry, String frequentFlyer) {}
   public record ReservationResponse(Long id, String code, FlightResponse flight, SeatResponse seat,
-                                    ReservationStatus status, String createdAt) {}
-  public record ProfileRequest(@NotBlank String fullName, String phone, String documentId) {}
-  public record ProfileResponse(Long id, String fullName, String email, String phone, String documentId, String role) {}
-  public record DashboardResponse(BigDecimal sales, long activeFlights, long users, long confirmedReservations) {}
+                                    ReservationStatus status, Boolean emailSent, String createdAt) {}
+  public record ProfileRequest(@NotBlank String fullName, String phone, String documentId, String title, String gender,
+                               String birthDate, String nationality, String documentType, String documentExpiration,
+                               String documentCountry, String frequentFlyer) {}
+  public record ProfileResponse(Long id, String fullName, String email, String phone, String documentId, String role,
+                                String title, String gender, String birthDate, String nationality, String documentType,
+                                String documentExpiration, String documentCountry, String frequentFlyer) {}
+  public record DashboardResponse(BigDecimal sales, long activeFlights, long users, long confirmedReservations,
+                                  long airports, long aircraft) {}
+  public record CustomerResponse(Long id, String fullName, String email, String phone, String documentId, String role,
+                                 String createdAt, long reservations) {}
+  public record PaymentResponse(Long id, String reservationCode, BigDecimal amount, String status,
+                                String authorizationCode, String cardLast4, String createdAt) {}
 }

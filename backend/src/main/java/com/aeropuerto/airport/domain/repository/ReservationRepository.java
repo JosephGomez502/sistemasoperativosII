@@ -8,5 +8,7 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
   Optional<Reservation> findByCode(String code);
   List<Reservation> findByUserEmailIgnoreCaseOrderByCreatedAtDesc(String email);
+  List<Reservation> findAllByOrderByCreatedAtDesc();
   long countByStatus(com.aeropuerto.airport.domain.model.ReservationStatus status);
+  long countByUserId(Long userId);
 }

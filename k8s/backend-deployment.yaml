@@ -32,6 +32,16 @@ spec:
               valueFrom: { configMapKeyRef: { name: airport-config, key: CORS_ALLOWED_ORIGINS } }
             - name: PAYMENT_APPROVAL_RATE
               valueFrom: { configMapKeyRef: { name: airport-config, key: PAYMENT_APPROVAL_RATE } }
+            - name: MAIL_HOST
+              valueFrom: { configMapKeyRef: { name: airport-config, key: MAIL_HOST } }
+            - name: MAIL_PORT
+              valueFrom: { configMapKeyRef: { name: airport-config, key: MAIL_PORT } }
+            - name: MAIL_FROM
+              valueFrom: { configMapKeyRef: { name: airport-config, key: MAIL_FROM } }
+            - name: MAIL_SMTP_AUTH
+              valueFrom: { configMapKeyRef: { name: airport-config, key: MAIL_SMTP_AUTH } }
+            - name: MAIL_SMTP_STARTTLS
+              valueFrom: { configMapKeyRef: { name: airport-config, key: MAIL_SMTP_STARTTLS } }
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness

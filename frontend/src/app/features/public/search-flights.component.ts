@@ -13,6 +13,9 @@ import { Flight } from '../../core/services/api.types';
   imports: [FormsModule, RouterLink, CurrencyPipe, DatePipe, MatButtonModule, MatInputModule, MatTableModule],
   template: `
     <main class="page grid">
+      <div class="stepper">
+        <span class="active"><strong>1</strong>Búsqueda</span><span class="active"><strong>2</strong>Resultados</span><span><strong>3</strong>Cliente</span><span><strong>4</strong>Pasajero</span><span><strong>5</strong>Servicios</span><span><strong>6</strong>Reservar</span>
+      </div>
       <h1>Buscar vuelos</h1>
       <form class="surface form-row" (ngSubmit)="load()">
         <mat-form-field><mat-label>Origen IATA</mat-label><input matInput name="origin" [(ngModel)]="origin"></mat-form-field>

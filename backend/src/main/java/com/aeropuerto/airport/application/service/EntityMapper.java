@@ -14,7 +14,11 @@ public class EntityMapper {
         f.getDepartureTime(), f.getArrivalTime(), f.getPrice(), f.getAvailableSeats(), f.getStatus());
   }
   public ReservationResponse toReservation(Reservation r) {
-    return new ReservationResponse(r.getId(), r.getCode(), toFlight(r.getFlight()), toSeat(r.getSeat()), r.getStatus(), r.getCreatedAt().toString());
+    return new ReservationResponse(r.getId(), r.getCode(), toFlight(r.getFlight()), toSeat(r.getSeat()), r.getStatus(), r.getEmailSent(), r.getCreatedAt().toString());
   }
-  public ProfileResponse toProfile(User u) { return new ProfileResponse(u.getId(), u.getFullName(), u.getEmail(), u.getPhone(), u.getDocumentId(), u.getRole().name()); }
+  public ProfileResponse toProfile(User u) {
+    return new ProfileResponse(u.getId(), u.getFullName(), u.getEmail(), u.getPhone(), u.getDocumentId(), u.getRole().name(),
+        u.getTitle(), u.getGender(), u.getBirthDate(), u.getNationality(), u.getDocumentType(),
+        u.getDocumentExpiration(), u.getDocumentCountry(), u.getFrequentFlyer());
+  }
 }

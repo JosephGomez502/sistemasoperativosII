@@ -22,4 +22,6 @@ public class ClientController {
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ticket-" + code + ".pdf")
         .contentType(MediaType.APPLICATION_PDF).body(bookings.ticket(auth.getName(), code));
   }
+  @PostMapping("/reservations/{code}/email")
+  ReservationResponse resendEmail(Authentication auth, @PathVariable String code) { return bookings.resendTicket(auth.getName(), code); }
 }
